@@ -61,6 +61,13 @@ function GeneratePDFButton({ invoice, currency }) {
     fetchUserProfile()
   }, [])
 
+  function formatNumber(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+  }
+
+ 
+  
+
   const getColorValue = (colorName) => {
     const colorMap = {
       rouge: '#FF0000', // Rouge
@@ -98,9 +105,9 @@ function GeneratePDFButton({ invoice, currency }) {
       doc.rect(20, footerY, 170, 2, 'F')
       doc.setFontSize(10)
       doc.setTextColor(0, 0, 0)
-      doc.text('Adresse : Sacré Cœur 3, Villa n° 8974 – Code Postal : 11000, Dakar,', 50, currentY + 6)
-      doc.text('E-mail : kebsamadou@gmail.com / amadoukkebe@palabresak2.com', 50, currentY + 12)
-      doc.text('Site Web : www.palabresak2.com, Tél : +221 77 871 25 11', 50, currentY + 18)
+      doc.text('Adresse : Sacré Cœur 3, Villa n° 8974 – Code Postal : 11000, Dakar,', 50, footerY + 6)
+      doc.text('E-mail : kebsamadou@gmail.com / amadoukkebe@palabresak2.com', 50, footerY + 12)
+      doc.text('Site Web : www.palabresak2.com, Tél : +221 77 871 25 11', 50, footerY + 18)
       // doc.text(`Adresse : ${user.adresse} `, 50, footerY + 6)
       // doc.text(`E-mail : ${user.email}`, 50, footerY + 12)
       // doc.text(
@@ -207,8 +214,14 @@ function GeneratePDFButton({ invoice, currency }) {
       doc.text(item.ref, 22, textY)
       doc.text(doc.splitTextToSize(item.description, 60), 42, textY)
       doc.text(item.quantity.toString(), 112, textY)
-      doc.text(`${item.price.toFixed(2)} ${currency}`, 132, textY)
-      doc.text(`${item.total.toFixed(2)} ${currency}`, 162, textY)
+      const formattedPrice = formatNumber(item.price.toFixed(0))
+      const formattedTotal = formatNumber(item.total.toFixed(0))
+
+      // Ensuite, utilisez formattedPrice et formattedTotal avec jsPDF
+      doc.text(`${formattedPrice} ${currency}`,  132, textY)
+      doc.text(`${formattedTotal} ${currency}`, 162, textY)
+      // doc.text(`${formatNumberWithSpace(item.price.toFixed(2))} ${currency}`, 132, textY)
+      // doc.text(`${formatNumberWithSpace(item.total.toFixed(2))} ${currency}`, 162, textY)
       if (index < invoice.items.length - 1) {
         doc.setDrawColor(0)
         doc.line(20, currentY + itemHeight + 2, 190, currentY + itemHeight + 2)
@@ -225,11 +238,47 @@ function GeneratePDFButton({ invoice, currency }) {
 
     // Total
     doc.setFontSize(12)
-    doc.text(
-      `MONTANT TOTAL HT: ${invoice.total.toFixed(2)} ${currency}`,
+    const formattedTotalInvoice = formatNumber(invoice.total.toFixed(0))
+    doc.text(`Total: ${formattedTotalInvoice} ${currency}`,
       120,
       currentY
     )
+
+    function nombreEnLettres(nombre) {
+      const unite = ['zero', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf']
+      const dizaines = ['dix', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante', 'soixante', 'quatre-vingt', 'quatre-vingt']
+      const exceptions = ['', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf']
+      const centaines = ['', 'cent']
+      const milliers = ['', 'mille']
+  
+      if (nombre === 0) return unite[0]
+  
+      if (nombre < 20) {
+        return (nombre < 10) ? unite[nombre] : exceptions[nombre - 10]
+      } else if (nombre < 100) {
+        if (nombre === 80) return 'quatre-vingts'
+        let dizaine = Math.floor(nombre / 10)
+        let uniteIndex = nombre % 10
+        let lien = (uniteIndex === 1 && dizaine !== 8 && dizaine !== 7) ? ' et ' : '-'
+        return dizaines[dizaine - 1] + (uniteIndex === 0 && dizaine !== 8 ? '' : (dizaine === 7 || dizaine === 9 ? 'dix-' : lien)) + (dizaine === 7 || dizaine === 9 ? exceptions[uniteIndex] : unite[uniteIndex])
+      } else if (nombre < 1000) {
+        let reste = nombre % 100
+        let cent = Math.floor(nombre / 100)
+        return (cent > 1 ? unite[cent] + ' ' : '') + centaines[1] + (reste > 0 ? (cent > 1 && reste < 20 ? ' ' : ' ') + nombreEnLettres(reste) : (nombre === 100 ? '' : 's'))
+      } else if (nombre < 1000000) {
+        let reste = nombre % 1000
+        let mille = Math.floor(nombre / 1000)
+        return (mille > 1 ? nombreEnLettres(mille) + ' ' : '') + milliers[1] + (reste > 0 ? ' ' + nombreEnLettres(reste) : '')
+      }
+      return 'Nombre hors limite'
+    }
+  
+    // Utilisation dans le PDF
+    const totalEnLettres = nombreEnLettres(invoice.total.toFixed(0)) // Assurez-vous que 'invoice.total' existe et est défini.
+  
+    // Insérez dans le document PDF
+    doc.text(`Le présent facture est à régler pour un montant de : ${totalEnLettres} ${currency}`, 20, currentY + 8)
+  
 
     // Informations bancaires
     currentY += 20 // Espace avant les informations bancaires
