@@ -98,13 +98,16 @@ function GeneratePDFButton({ invoice, currency }) {
       doc.rect(20, footerY, 170, 2, 'F')
       doc.setFontSize(10)
       doc.setTextColor(0, 0, 0)
-      doc.text(`Adresse : ${user.adresse} `, 50, footerY + 6)
-      doc.text(`E-mail : ${user.email}`, 50, footerY + 12)
-      doc.text(
-        `Site Web : ${user.site}, Tél : ${user.telephone}`,
-        50,
-        footerY + 18
-      )
+      doc.text('Adresse : Sacré Cœur 3, Villa n° 8974 – Code Postal : 11000, Dakar,', 50, currentY + 6)
+      doc.text('E-mail : kebsamadou@gmail.com / amadoukkebe@palabresak2.com', 50, currentY + 12)
+      doc.text('Site Web : www.palabresak2.com, Tél : +221 77 871 25 11', 50, currentY + 18)
+      // doc.text(`Adresse : ${user.adresse} `, 50, footerY + 6)
+      // doc.text(`E-mail : ${user.email}`, 50, footerY + 12)
+      // doc.text(
+      //   `Site Web : ${user.site}, Tél : ${user.telephone}`,
+      //   50,
+      //   footerY + 18
+      // )
     }
 
     // Ajouter le pied de page à la première page
@@ -229,39 +232,39 @@ function GeneratePDFButton({ invoice, currency }) {
     )
 
     // Informations bancaires
-        currentY += 20 // Espace avant les informations bancaires
-        const bankInfo = [
-            "COORDONNEES BANCAIRES", "SOCIETE GENERALE", "RELEVE D'IDENTITE BANCAIRE",
-            "Titulaire du compte: 01600 POMPIDOU", "Domiciliation: XOF",
-            "Code agence: SN011 01016 004000 334878 23", "Devise du compte: SN08 SN011 01016 004000 334878 23",
-            "RIB: SGSNSNDAXXX", "IBAN: 0", "BIC-SWIFT: 0"
-        ]
-        bankInfo.forEach((line, index) => {
-          if (currentY > 270) { // Vérification avant chaque ligne pour les informations bancaires
-              doc.addPage()
-              currentY = 20
-              addFooter()
-          }
+    currentY += 20 // Espace avant les informations bancaires
+    const bankInfo = [
+      'COORDONNEES BANCAIRES', 'SOCIETE GENERALE', "RELEVE D'IDENTITE BANCAIRE",
+      'Titulaire du compte: 01600 POMPIDOU', 'Domiciliation: XOF',
+      'Code agence: SN011 01016 004000 334878 23', 'Devise du compte: SN08 SN011 01016 004000 334878 23',
+      'RIB: SGSNSNDAXXX', 'IBAN: 0', 'BIC-SWIFT: 0'
+    ]
+    bankInfo.forEach((line, index) => {
+      if (currentY > 270) { // Vérification avant chaque ligne pour les informations bancaires
+        doc.addPage()
+        currentY = 20
+        addFooter()
+      }
 
-          // Réduire la longueur du rectangle et ajuster la taille de l'écriture
-          const rectLength = 70 // Nouvelle longueur du rectangle, ajustez selon les besoins
-          const fontSize = 8 // Nouvelle taille de l'écriture, ajustez selon les besoins
+      // Réduire la longueur du rectangle et ajuster la taille de l'écriture
+      const rectLength = 70 // Nouvelle longueur du rectangle, ajustez selon les besoins
+      const fontSize = 8 // Nouvelle taille de l'écriture, ajustez selon les besoins
 
-          if (index === 0) {
-              doc.setFillColor(0, 100, 0)
-              doc.rect(20, currentY, rectLength, 5, 'F')
-              doc.setFontSize(fontSize)
-          } else {
-              doc.setFillColor(0, 128, 0)
-              doc.rect(20, currentY, rectLength, 5, 'F')
-              doc.setFontSize(fontSize)
-          }
+      if (index === 0) {
+        doc.setFillColor(0, 100, 0)
+        doc.rect(20, currentY, rectLength, 5, 'F')
+        doc.setFontSize(fontSize)
+      } else {
+        doc.setFillColor(0, 128, 0)
+        doc.rect(20, currentY, rectLength, 5, 'F')
+        doc.setFontSize(fontSize)
+      }
 
-          doc.setTextColor(255, 255, 255)
-          // Assurez-vous que le texte est bien aligné à l'intérieur du rectangle plus petit
-          doc.text(line, 22, currentY + 3)
-          currentY += 5
-      })
+      doc.setTextColor(255, 255, 255)
+      // Assurez-vous que le texte est bien aligné à l'intérieur du rectangle plus petit
+      doc.text(line, 22, currentY + 3)
+      currentY += 5
+    })
 
     //Dernière ligne verte
     if (currentY > 270) {
