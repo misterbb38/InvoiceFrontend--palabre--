@@ -21,7 +21,7 @@
     "framer-motion": "^11.0.5",
     "install": "^0.13.0",
     "jspdf": "^2.5.1",
-    "npm": "^10.4.0",
+    "npm": "^10.5.2",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
     "react-chartjs-2": "^5.2.0",
