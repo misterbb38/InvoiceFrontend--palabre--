@@ -18,5 +18,8 @@ export default defineConfig({
   resolve: {
     // Ajoutez ici les extensions que vous souhaitez prendre en charge
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    alias: {
+      'pdfjs-dist/build/pdf.worker': 'pdfjs-dist/build/pdf.worker.entry',
+    },
   },
 })
