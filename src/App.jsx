@@ -15,6 +15,7 @@ import Parametre from './pages/Parametre'
 import ClientList from './pages/ClientList'
 import ProduitList from './pages/ProduitList'
 import Home from './pages/home'
+import FileUploadAndWordCount from './pages/FileUploadAndWordCount'
 import GenerateAccessKey from './components/GenerateAccessKey'
 import KeyExpired from './components/KeyExpired'
 import SuperAdminRoute from './components/SuperAdminRoute' // Assurez-vous que le chemin est correct
@@ -69,6 +70,7 @@ function App() {
             <Route path="Formulaire" element={<Formulaire />} />
             <Route path="instruction" element={<Instruction />} />
             <Route path="notification" element={<Notifications />} />
+            <Route path="enum" element={<FileUploadAndWordCount />} />
             <Route path="parametre" element={<Parametre />} />
           </Route>
         </Route>
