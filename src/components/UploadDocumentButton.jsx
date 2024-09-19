@@ -257,7 +257,7 @@ const UploadDocumentButton = ({ onDocumentProcessed }) => {
         </label>
         <input
           type="file"
-          accept=".doc,.docx,.pdf"
+          accept=".doc,.docx"
           onChange={handleFileChange}
           className="mt-1 w-full file-input file-input-bordered file-input-primary max-w-xs"
           ref={fileInputRef}

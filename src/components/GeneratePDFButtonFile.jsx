@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 import logoLeft from '../images/logo/logo.png'
 import logoRight from '../images/logo2.png'
 
-function GeneratePDFButton({ invoice, currency }) {
+function GeneratePDFButton({ invoice, currency, file }) {
   const [user, setUser] = useState({
     nom: '',
     prenom: '',
@@ -90,7 +90,7 @@ function GeneratePDFButton({ invoice, currency }) {
   }
 
   // Récupération de la configuration de couleur basée sur le statut
-  const { textColor, fillColor } = statusColors[invoice.status]
+  // const { textColor, fillColor } = statusColors[invoice.status]
 
   const generatePDF = () => {
     const doc = new jsPDF()
@@ -144,16 +144,16 @@ function GeneratePDFButton({ invoice, currency }) {
     doc.setFontSize(20)
     doc.setFont('helvetica', 'bold')
     doc.setTextColor(userColor)
-    doc.text(`${invoice.type}`, 20, 25)
-    doc.text(` Nº ${invoice.invoiceNumber}`, 45, 25)
+    // doc.text(`${invoice.type}`, 20, 25)
+    // doc.text(` Nº ${invoice.invoiceNumber}`, 45, 25)
     doc.setFontSize(15)
     doc.setFont('helvetica', 'bold')
-    doc.setTextColor(textColor)
-    doc.setFillColor(fillColor)
+    // doc.setTextColor(textColor)
+    // doc.setFillColor(fillColor)
     // Dessin du rectangle de fond
     // Remplacez les valeurs 140, 30, 35, 10 par les coordonnées et dimensions souhaitées pour le rectangle
     doc.rect(20, 33, 23, 6, 'F')
-    doc.text(`${invoice.status}`, 20, 37)
+    // doc.text(`${invoice.status}`, 20, 37)
     doc.setTextColor(0, 0, 0)
     // doc.text("Anglais <> Français <> Portugais ", 140, 25)
     doc.setFontSize(14)
@@ -170,15 +170,15 @@ function GeneratePDFButton({ invoice, currency }) {
     doc.text(`Destinataire`, 130, currentY + 25)
 
     // Ajout de la ligne sous le texte 'MIAAE'
-    doc
-      .moveTo(103, currentY + 27) // Position de départ de la ligne
-      .lineTo(200, currentY + 27) // Position finale de la ligne
-      .stroke() // Dessine la ligne
-    doc.text(` ${invoice.client.name}`, 130, currentY + 35)
-    doc.setFontSize(8)
-    doc.text(`${invoice.client.address}`, 130, currentY + 40)
-    doc.text(`${invoice.client.email}`, 130, currentY + 45)
-    doc.text(`${invoice.client.telephone}`, 130, currentY + 50)
+    // doc
+    //   .moveTo(103, currentY + 27) // Position de départ de la ligne
+    //   .lineTo(200, currentY + 27) // Position finale de la ligne
+    //   .stroke() // Dessine la ligne
+    // doc.text(` ${invoice.client.name}`, 130, currentY + 35)
+    // doc.setFontSize(8)
+    // doc.text(`${invoice.client.address}`, 130, currentY + 40)
+    // doc.text(`${invoice.client.email}`, 130, currentY + 45)
+    // doc.text(`${invoice.client.telephone}`, 130, currentY + 50)
 
     // En-tête de la facture
     doc.setFontSize(8)
@@ -201,11 +201,11 @@ function GeneratePDFButton({ invoice, currency }) {
     doc.setFont('helvetica', 'bold')
     doc.text(`N.I.N.E.A: 008643860`, 20, currentY + 25)
     // Ajout du texte
-    doc.text(
-      `Date: ${new Date(invoice.date).toLocaleDateString()}`,
-      170,
-      currentY + 5
-    )
+    // doc.text(
+    //   `Date: ${new Date(invoice.date).toLocaleDateString()}`,
+    //   170,
+    //   currentY + 5
+    // )
 
     // Ajout de la ligne sous le texte 'Date'
     doc
@@ -214,7 +214,7 @@ function GeneratePDFButton({ invoice, currency }) {
       .stroke() // Dessine la ligne
 
     // Ajout du texte 'MIAAE'
-    doc.text(`MIAAE ${invoice.invoiceNumber}`, 175, currentY + 15)
+    // doc.text(`MIAAE ${invoice.invoiceNumber}`, 175, currentY + 15)
 
     // Ajout de la ligne sous le texte 'MIAAE'
     doc
@@ -223,11 +223,11 @@ function GeneratePDFButton({ invoice, currency }) {
       .stroke() // Dessine la ligne
 
     // Trier les articles par catégorie: Révision d'abord, puis Traduction
-    const sortedItems = invoice.items.sort((a, b) => {
-      if (a.category === 'Révision' && b.category === 'Traduction') return -1
-      if (a.category === 'Traduction' && b.category === 'Révision') return 1
-      return 0
-    })
+    // const sortedItems = invoice.items.sort((a, b) => {
+    //   if (a.category === 'Révision' && b.category === 'Traduction') return -1
+    //   if (a.category === 'Traduction' && b.category === 'Révision') return 1
+    //   return 0
+    // })
 
     let currentCategory = ''
 
@@ -237,117 +237,38 @@ function GeneratePDFButton({ invoice, currency }) {
     doc.rect(20, currentY, 170, 8, 'F')
     doc.setTextColor(255, 255, 255)
     doc.setFontSize(8)
-    doc.text('Ref', 22, currentY + 5)
-    doc.text('Désignation', 42, currentY + 5)
-    doc.text('Nombre de mots', 112, currentY + 5)
-    doc.text('Prix forfaitaire', 138, currentY + 5)
-    doc.text('Total', 166, currentY + 5)
-    currentY += 8
+    doc.text('Nom du fichier', 22, currentY + 5)
+    doc.text('Nbrs de mots', 100, currentY + 5)
+    doc.text('Nbrs de pages', 125, currentY + 5)
+    doc.text('Prix par mot', 150, currentY + 5)
+    doc.text('Prix par page', 170, currentY + 5)
+    currentY += 20
 
     doc.setFontSize(8)
     doc.setTextColor(0, 0, 0)
-    // invoice.items.forEach((item, index) => {
-    //   const itemTextHeight =
-    //     doc.splitTextToSize(item.description, 60).length * 5
-    //   const itemHeight = itemTextHeight + 5 // Ajouter une marge
-    //   if (currentY + itemHeight > 280) {
-    //     doc.addPage()
-    //     currentY = 20 // Réinitialiser la position Y après l'ajout d'une page
-    //     addFooter()
-    //   }
-    //   const textY = currentY + itemHeight / 2 - itemTextHeight / 2
-    //   doc.text(item.ref, 22, textY)
-    //   doc.text(doc.splitTextToSize(item.description, 60), 42, textY)
-    //   doc.text(item.quantity.toString(), 112, textY)
-    //   const formattedPrice = formatNumber(item.price.toFixed(0))
-    //   const formattedTotal = formatNumber(item.total.toFixed(0))
 
-    //   // Ensuite, utilisez formattedPrice et formattedTotal avec jsPDF
-    //   doc.text(`${formattedPrice} ${currency}`,  132, textY)
-    //   doc.text(`${formattedTotal} ${currency}`, 162, textY)
-    //   // doc.text(`${formatNumberWithSpace(item.price.toFixed(2))} ${currency}`, 132, textY)
-    //   // doc.text(`${formatNumberWithSpace(item.total.toFixed(2))} ${currency}`, 162, textY)
-    //   if (index < invoice.items.length - 1) {
-    //     doc.setDrawColor(0)
-    //     doc.line(20, currentY + itemHeight + 2, 190, currentY + itemHeight + 2)
-    //   }
-    //   currentY += itemHeight + 5
-    // })
-    sortedItems.forEach((item, index) => {
-      // Si la catégorie change, ajouter un en-tête de catégorie avec un fond gris, texte centré et en gras
-      if (item.category !== currentCategory) {
-        currentCategory = item.category
-        doc.setFillColor(200, 200, 200) // Couleur gris clair pour le fond des catégories
-        doc.rect(20, currentY, 170, 6, 'F') // Hauteur réduite de la case catégorie
-        doc.setFont('helvetica', 'bold') // Mettre le texte en gras
-        doc.setTextColor(0, 0, 0) // Couleur du texte en noir
-        doc.setFontSize(8)
-        doc.text(
-          `${currentCategory} des documents intitulés :`,
-          105,
-          currentY + 4,
-          { align: 'center' }
-        ) // Centrer le texte de la catégorie
-        currentY += 8 // Ajouter de l'espace après le titre de la catégorie
-      }
+    // Parcours des fichiers et ajout de chaque fichier comme ligne du tableau
+    file.fileData.forEach((item) => {
+      doc.text(item.fileName, 22, currentY)
+      doc.text(item.wordCount.toString(), 110, currentY)
+      doc.text(item.pageCount.toString(), 135, currentY)
+      doc.text(item.priceForWords.toFixed(2), 150, currentY)
+      doc.text(item.priceForPages.toFixed(2), 170, currentY)
 
-      // Ajouter les détails de l'article avec alternance de couleur de fond
-      const itemTextHeight =
-        doc.splitTextToSize(item.description, 50).length * 2.5 // Hauteur des lignes de texte réduite
-      const itemHeight = itemTextHeight + 2 // Hauteur réduite pour moins d'espace
-
-      // Alterner entre le fond gris foncé et vert foncé pour chaque article
-      const isEven = index % 2 === 0
-      doc.setFillColor(
-        isEven ? 224 : 200,
-        isEven ? 224 : 230,
-        isEven ? 224 : 201
-      ) // Gris clair moyen pour pairs, vert menthe pour impairs
-      doc.rect(20, currentY, 170, itemHeight + 3, 'F') // Remplissage de l'arrière-plan
-
-      if (currentY + itemHeight > 280) {
-        doc.addPage()
-        currentY = 20 // Réinitialiser la position Y après ajout d'une page
-        addFooter()
-      }
-
-      // Centrage vertical des textes dans chaque ligne
-      const textY = currentY + (itemHeight + 3) / 2 // Centrer le texte verticalement
-
-      // Ajouter les colonnes avec du texte
-      doc.setTextColor(0, 0, 0) // Texte en noir pour bien contraster avec le fond
-      doc.text(item.ref, 22, textY, { baseline: 'middle' }) // Centrer le texte verticalement
-      doc.text(doc.splitTextToSize(item.description, 60), 42, textY, {
-        baseline: 'middle',
-      })
-      doc.text(item.quantity.toString(), 112, textY, { baseline: 'middle' })
-
-      const formattedPrice = formatNumber(item.price.toFixed(0))
-      const formattedTotal = formatNumber(item.total.toFixed(0))
-
-      doc.text(`${formattedPrice} ${currency}`, 132, textY, {
-        baseline: 'middle',
-      })
-      doc.text(`${formattedTotal} ${currency}`, 162, textY, {
-        baseline: 'middle',
-      })
-
-      // Ajouter des colonnes avec des lignes verticales (pour les articles uniquement, pas pour les catégories)
-      doc.setDrawColor(0, 0, 0)
-      doc.line(20, currentY, 20, currentY + itemHeight + 3) // Ligne verticale gauche
-      doc.line(40, currentY, 40, currentY + itemHeight + 3) // Ligne entre ref et description
-      doc.line(110, currentY, 110, currentY + itemHeight + 3) // Ligne entre description et quantité
-      doc.line(130, currentY, 130, currentY + itemHeight + 3) // Ligne entre quantité et prix
-      doc.line(160, currentY, 160, currentY + itemHeight + 3) // Ligne entre prix et total
-      doc.line(190, currentY, 190, currentY + itemHeight + 3) // Ligne verticale droite
-
-      // Ajouter une ligne horizontale pour fermer chaque ligne d'article
-      doc.line(20, currentY + itemHeight + 3, 190, currentY + itemHeight + 3) // Ligne horizontale de fermeture
-
-      currentY += itemHeight + 4 // Réduction de l'espacement entre les articles
+      currentY += 10
     })
 
     currentY += 8
+
+    // Affichage des totaux
+    doc.text('Total :', 22, currentY)
+    doc.text(file.totalWordCount.toString(), 110, currentY)
+
+    doc.text(file.totalPageCount.toString(), 135, currentY)
+
+    doc.text(file.totalPriceForWords.toFixed(2), 150, currentY)
+
+    doc.text(file.totalPriceForPages.toFixed(2), 170, currentY)
 
     // Vérification pour l'ajout d'une page avant le total et les informations bancaires
     if (currentY > 280) {
@@ -474,20 +395,20 @@ function GeneratePDFButton({ invoice, currency }) {
     }
 
     // Determine the total amount in the original currency
-    const totalAmount = invoice.total
-    const originalCurrency = currency // Assumed to be either 'EUR' or 'USD' or 'FCFA'
-    const totalAmountFCFA = convertToFCFA(totalAmount, originalCurrency)
+    // const totalAmount = invoice.total
+    // const originalCurrency = currency // Assumed to be either 'EUR' or 'USD' or 'FCFA'
+    // const totalAmountFCFA = convertToFCFA(totalAmount, originalCurrency)
 
     // Set font size and color
     doc.setFontSize(8)
     doc.setTextColor(0, 0, 0) // Black for text
 
     // Display the total amount in the original currency
-    doc.text(
-      `MONTANT TOTAL ${formatNumber(totalAmount.toFixed(0))} ${originalCurrency}`,
-      130,
-      currentY
-    )
+    // doc.text(
+    //   `MONTANT TOTAL ${formatNumber(totalAmount.toFixed(0))} ${originalCurrency}`,
+    //   130,
+    //   currentY
+    // )
 
     // Draw a horizontal line above and below the total amount
     doc.setDrawColor(0, 0, 0) // Black for lines
@@ -496,25 +417,15 @@ function GeneratePDFButton({ invoice, currency }) {
     // Move the position down for additional text
 
     // Display the total amount in FCFA
-    if (originalCurrency !== 'FCFA') {
-      doc.setTextColor(0, 100, 0) // Dark green for FCFA amount
 
-      doc.text(
-        `Montant à payer : ${formatNumber(totalAmountFCFA.toFixed(0))} FCFA`,
-        130,
-        currentY + 5
-      )
-
-      // Add horizontal lines above and below the new section
-    }
     doc.setDrawColor(0, 0, 0) // Black for lines
 
     doc.line(130, currentY + 10, 190, currentY + 10) // Line below
 
     // Ajout du texte au PDF
-    const montantEnDevise = invoice.total
-    const montantEnCFA = convertirEnCFA(montantEnDevise, currency) // Conversion en CFA
-    const montantEnLettresCFA = convertirSommeEnLettres(montantEnCFA)
+    // const montantEnDevise = invoice.total
+    // const montantEnCFA = convertirEnCFA(montantEnDevise, currency) // Conversion en CFA
+    // const montantEnLettresCFA = convertirSommeEnLettres(montantEnCFA)
 
     // Couleur pour les montants en vert foncé
     const darkGreen = [0, 100, 0]
@@ -528,26 +439,26 @@ function GeneratePDFButton({ invoice, currency }) {
     doc.setTextColor(0, 0, 0) // Noir pour le texte explicatif
 
     // Utiliser splitTextToSize pour ajuster le texte entre 20 et 100 de largeur
-    const explicationText = doc.splitTextToSize(
-      `Arrêté la présente facture à la somme de : ${formatNumber(montantEnCFA.toFixed(0))} XOF (${montantEnLettresCFA}).`,
-      80 // largeur maximale de 80 unités
-    )
+    // const explicationText = doc.splitTextToSize(
+    //   `Arrêté la présente facture à la somme de : ${formatNumber(montantEnCFA.toFixed(0))} XOF (${montantEnLettresCFA}).`,
+    //   80 // largeur maximale de 80 unités
+    // )
 
     // Afficher le texte explicatif (noir)
-    doc.text(explicationText, 20, currentY)
+    // doc.text(explicationText, 20, currentY)
 
     // Ajuster la position Y pour la somme en chiffres (vert foncé)
-    currentY += explicationText.length * 4 // Espacement en fonction de la longueur du texte
+    // currentY += explicationText.length * 4 // Espacement en fonction de la longueur du texte
 
     // Si la devise n'est pas en FCFA, ajouter les informations de conversion
-    if (currency !== 'FCFA') {
-      const conversionText = `À convertir en francs CFA (XOF) au taux de 1 ${currency} = 600 XOF.\nSoit Montant à payer : ${formatNumber(montantEnCFA.toFixed(0))} XOF (${convertirSommeEnLettres(montantEnCFA)}).`
+    // if (currency !== 'FCFA') {
+    //   const conversionText = `À convertir en francs CFA (XOF) au taux de 1 ${currency} = 600 XOF.\nSoit Montant à payer : ${formatNumber(montantEnCFA.toFixed(0))} XOF (${convertirSommeEnLettres(montantEnCFA)}).`
 
-      // Utiliser splitTextToSize pour ajuster le texte entre 20 et 100 de largeur
-      const conversionTextLines = doc.splitTextToSize(conversionText, 80)
-      doc.text(conversionTextLines, 20, currentY)
-      currentY += conversionTextLines.length * 4
-    }
+    //   // Utiliser splitTextToSize pour ajuster le texte entre 20 et 100 de largeur
+    //   const conversionTextLines = doc.splitTextToSize(conversionText, 80)
+    //   doc.text(conversionTextLines, 20, currentY)
+    //   currentY += conversionTextLines.length * 4
+    // }
 
     // Ajouter une ligne horizontale en bas du texte
     doc.line(20, currentY + 5, 100, currentY + 5) // Ligne horizontale inférieure
@@ -633,6 +544,7 @@ function GeneratePDFButton({ invoice, currency }) {
 
 GeneratePDFButton.propTypes = {
   invoice: PropTypes.object.isRequired,
+  file: PropTypes.object.isRequired,
   currency: PropTypes.string.isRequired,
 }
 

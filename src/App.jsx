@@ -16,6 +16,7 @@ import ClientList from './pages/ClientList'
 import ProduitList from './pages/ProduitList'
 import Home from './pages/home'
 import FileUploadAndWordCount from './pages/FileUploadAndWordCount'
+import AllFileDataTable from './pages/AllFileDataTable'
 import GenerateAccessKey from './components/GenerateAccessKey'
 import KeyExpired from './components/KeyExpired'
 import SuperAdminRoute from './components/SuperAdminRoute' // Assurez-vous que le chemin est correct
@@ -71,6 +72,7 @@ function App() {
             <Route path="instruction" element={<Instruction />} />
             <Route path="notification" element={<Notifications />} />
             <Route path="enum" element={<FileUploadAndWordCount />} />
+            <Route path="enumTab" element={<AllFileDataTable />} />
             <Route path="parametre" element={<Parametre />} />
           </Route>
         </Route>
