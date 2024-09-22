@@ -152,10 +152,11 @@ function GeneratePDFButton({ invoice, currency, file }) {
     // doc.setFillColor(fillColor)
     // Dessin du rectangle de fond
     // Remplacez les valeurs 140, 30, 35, 10 par les coordonnées et dimensions souhaitées pour le rectangle
-    doc.rect(20, 33, 23, 6, 'F')
+    // doc.rect(20, 33, 23, 6, 'F')
     // doc.text(`${invoice.status}`, 20, 37)
-    doc.setTextColor(0, 0, 0)
+    // doc.setTextColor(0, 0, 0)
     // doc.text("Anglais <> Français <> Portugais ", 140, 25)
+    doc.setTextColor(0, 0, 0)
     doc.setFontSize(14)
     doc.text('', 105, 30, null, null, 'center')
 
@@ -167,7 +168,7 @@ function GeneratePDFButton({ invoice, currency, file }) {
 
     doc.setFontSize(8) // Changez la taille à la valeur souhaitée
     doc.setFont('helvetica', 'bold') // Définissez la police en Helvetica et le style en gras
-    doc.text(`Destinataire`, 130, currentY + 25)
+    // doc.text(`Destinataire`, 130, currentY + 25)
 
     // Ajout de la ligne sous le texte 'MIAAE'
     // doc
@@ -208,19 +209,19 @@ function GeneratePDFButton({ invoice, currency, file }) {
     // )
 
     // Ajout de la ligne sous le texte 'Date'
-    doc
-      .moveTo(163, currentY + 7) // Position de départ de la ligne
-      .lineTo(200, currentY + 7) // Position finale de la ligne
-      .stroke() // Dessine la ligne
+    // doc
+    //   .moveTo(163, currentY + 7) // Position de départ de la ligne
+    //   .lineTo(200, currentY + 7) // Position finale de la ligne
+    //   .stroke() // Dessine la ligne
 
     // Ajout du texte 'MIAAE'
     // doc.text(`MIAAE ${invoice.invoiceNumber}`, 175, currentY + 15)
 
     // Ajout de la ligne sous le texte 'MIAAE'
-    doc
-      .moveTo(163, currentY + 17) // Position de départ de la ligne
-      .lineTo(200, currentY + 17) // Position finale de la ligne
-      .stroke() // Dessine la ligne
+    // doc
+    //   .moveTo(163, currentY + 17) // Position de départ de la ligne
+    //   .lineTo(200, currentY + 17) // Position finale de la ligne
+    //   .stroke() // Dessine la ligne
 
     // Trier les articles par catégorie: Révision d'abord, puis Traduction
     // const sortedItems = invoice.items.sort((a, b) => {
@@ -249,13 +250,20 @@ function GeneratePDFButton({ invoice, currency, file }) {
 
     // Parcours des fichiers et ajout de chaque fichier comme ligne du tableau
     file.fileData.forEach((item) => {
-      doc.text(item.fileName, 22, currentY)
+      // Définir la couleur de remplissage pour un gris léger (par exemple, RGB: 220, 220, 220)
+      doc.setFillColor(220, 220, 220)
+
+      // Dessiner le rectangle pour chaque ligne
+      doc.rect(20, currentY - 5, 170, 10, 'F') // Fond gris pour toute la ligne (largeur de 170)
+
+      // Ajouter le texte dans les colonnes après avoir dessiné le fond gris
+      doc.text(item.fileName, 22, currentY, { maxWidth: 75 })
       doc.text(item.wordCount.toString(), 110, currentY)
       doc.text(item.pageCount.toString(), 135, currentY)
-      doc.text(item.priceForWords.toFixed(2), 150, currentY)
-      doc.text(item.priceForPages.toFixed(2), 170, currentY)
+      doc.text(item.priceForWords.toFixed(0), 150, currentY)
+      doc.text(item.priceForPages.toFixed(0), 170, currentY)
 
-      currentY += 10
+      currentY += 10 // Espacement entre les lignes
     })
 
     currentY += 8
@@ -266,9 +274,9 @@ function GeneratePDFButton({ invoice, currency, file }) {
 
     doc.text(file.totalPageCount.toString(), 135, currentY)
 
-    doc.text(file.totalPriceForWords.toFixed(2), 150, currentY)
+    doc.text(`${file.totalPriceForWords.toFixed(0)} ${currency}`, 150, currentY)
 
-    doc.text(file.totalPriceForPages.toFixed(2), 170, currentY)
+    doc.text(`${file.totalPriceForPages.toFixed(0)} ${currency}`, 170, currentY)
 
     // Vérification pour l'ajout d'une page avant le total et les informations bancaires
     if (currentY > 280) {
@@ -279,189 +287,15 @@ function GeneratePDFButton({ invoice, currency, file }) {
 
     // Total
 
-    // Fonction pour convertir un nombre en lettres (français)
-    function nombreEnLettres(nombre) {
-      const unite = [
-        'zéro',
-        'un',
-        'deux',
-        'trois',
-        'quatre',
-        'cinq',
-        'six',
-        'sept',
-        'huit',
-        'neuf',
-      ]
-      const dizaines = [
-        'dix',
-        'vingt',
-        'trente',
-        'quarante',
-        'cinquante',
-        'soixante',
-        'soixante',
-        'quatre-vingt',
-        'quatre-vingt',
-      ]
-      const exceptions = [
-        '',
-        'onze',
-        'douze',
-        'treize',
-        'quatorze',
-        'quinze',
-        'seize',
-        'dix-sept',
-        'dix-huit',
-        'dix-neuf',
-      ]
-
-      if (nombre === 0) return unite[0]
-
-      if (nombre < 20) {
-        return nombre < 10 ? unite[nombre] : exceptions[nombre - 10]
-      } else if (nombre < 100) {
-        if (nombre === 80) return 'quatre-vingts'
-        let dizaine = Math.floor(nombre / 10)
-        let uniteIndex = nombre % 10
-        let lien =
-          uniteIndex === 1 && dizaine !== 8 && dizaine !== 7 ? ' et ' : '-'
-        return (
-          dizaines[dizaine - 1] +
-          (uniteIndex === 0 && dizaine !== 8
-            ? ''
-            : dizaine === 7 || dizaine === 9
-              ? 'dix-'
-              : lien) +
-          (dizaine === 7 || dizaine === 9
-            ? exceptions[uniteIndex]
-            : unite[uniteIndex])
-        )
-      } else if (nombre < 1000) {
-        let reste = nombre % 100
-        let cent = Math.floor(nombre / 100)
-        return (
-          (cent > 1 ? unite[cent] + ' ' : '') +
-          'cent' +
-          (reste > 0 ? ' ' + nombreEnLettres(reste) : '')
-        )
-      } else if (nombre < 1000000) {
-        let reste = nombre % 1000
-        let mille = Math.floor(nombre / 1000)
-        return (
-          (mille > 1 ? nombreEnLettres(mille) + ' mille' : 'mille') +
-          (reste > 0 ? ' ' + nombreEnLettres(reste) : '')
-        )
-      }
-      return 'Nombre hors limite'
-    }
-
-    // Fonction pour convertir la somme en lettres en CFA
-    function convertirSommeEnLettres(montant) {
-      let partieEntiere = Math.floor(montant)
-      let centimes = Math.round((montant - partieEntiere) * 100)
-
-      let partieEntiereEnLettres = nombreEnLettres(partieEntiere)
-      let centimesEnLettres =
-        centimes > 0 ? `et ${nombreEnLettres(centimes)} centimes` : ''
-
-      return `${partieEntiereEnLettres} francs CFA ${centimesEnLettres}`
-    }
-
-    // Fonction pour convertir les devises en CFA
-    function convertirEnCFA(montant, devise) {
-      const tauxConversion = {
-        USD: 600,
-        EUR: 600,
-        FCFA: 1,
-      }
-
-      return montant * (tauxConversion[devise] || 1) // Convertir selon le taux de la devise ou laisser inchangé si c'est déjà en FCFA
-    }
-
-    // Define the conversion rates
-    const conversionRates = {
-      EUR: 600,
-      USD: 600,
-    }
-
-    // Function to convert the amount to FCFA
-    function convertToFCFA(amount, currency) {
-      if (currency in conversionRates) {
-        return amount * conversionRates[currency]
-      }
-      return amount // No conversion if currency is FCFA
-    }
-
-    // Determine the total amount in the original currency
-    // const totalAmount = invoice.total
-    // const originalCurrency = currency // Assumed to be either 'EUR' or 'USD' or 'FCFA'
-    // const totalAmountFCFA = convertToFCFA(totalAmount, originalCurrency)
-
     // Set font size and color
     doc.setFontSize(8)
     doc.setTextColor(0, 0, 0) // Black for text
 
-    // Display the total amount in the original currency
-    // doc.text(
-    //   `MONTANT TOTAL ${formatNumber(totalAmount.toFixed(0))} ${originalCurrency}`,
-    //   130,
-    //   currentY
-    // )
-
-    // Draw a horizontal line above and below the total amount
-    doc.setDrawColor(0, 0, 0) // Black for lines
-    doc.line(130, currentY - 5, 190, currentY - 5) // Line above
-
-    // Move the position down for additional text
-
-    // Display the total amount in FCFA
-
-    doc.setDrawColor(0, 0, 0) // Black for lines
-
-    doc.line(130, currentY + 10, 190, currentY + 10) // Line below
-
-    // Ajout du texte au PDF
-    // const montantEnDevise = invoice.total
-    // const montantEnCFA = convertirEnCFA(montantEnDevise, currency) // Conversion en CFA
-    // const montantEnLettresCFA = convertirSommeEnLettres(montantEnCFA)
-
     // Couleur pour les montants en vert foncé
-    const darkGreen = [0, 100, 0]
-
-    // Configuration des lignes horizontales
-    doc.setDrawColor(0, 0, 0) // Noir pour les lignes
-    doc.line(20, currentY - 5, 100, currentY - 5) // Ligne horizontale supérieure
 
     // Texte noir pour l'explication et texte vert foncé pour les sommes
     doc.setFontSize(8)
     doc.setTextColor(0, 0, 0) // Noir pour le texte explicatif
-
-    // Utiliser splitTextToSize pour ajuster le texte entre 20 et 100 de largeur
-    // const explicationText = doc.splitTextToSize(
-    //   `Arrêté la présente facture à la somme de : ${formatNumber(montantEnCFA.toFixed(0))} XOF (${montantEnLettresCFA}).`,
-    //   80 // largeur maximale de 80 unités
-    // )
-
-    // Afficher le texte explicatif (noir)
-    // doc.text(explicationText, 20, currentY)
-
-    // Ajuster la position Y pour la somme en chiffres (vert foncé)
-    // currentY += explicationText.length * 4 // Espacement en fonction de la longueur du texte
-
-    // Si la devise n'est pas en FCFA, ajouter les informations de conversion
-    // if (currency !== 'FCFA') {
-    //   const conversionText = `À convertir en francs CFA (XOF) au taux de 1 ${currency} = 600 XOF.\nSoit Montant à payer : ${formatNumber(montantEnCFA.toFixed(0))} XOF (${convertirSommeEnLettres(montantEnCFA)}).`
-
-    //   // Utiliser splitTextToSize pour ajuster le texte entre 20 et 100 de largeur
-    //   const conversionTextLines = doc.splitTextToSize(conversionText, 80)
-    //   doc.text(conversionTextLines, 20, currentY)
-    //   currentY += conversionTextLines.length * 4
-    // }
-
-    // Ajouter une ligne horizontale en bas du texte
-    doc.line(20, currentY + 5, 100, currentY + 5) // Ligne horizontale inférieure
 
     // Réinitialiser la couleur du texte pour les prochains éléments
     doc.setTextColor(0, 0, 0)
@@ -476,38 +310,6 @@ function GeneratePDFButton({ invoice, currency, file }) {
 
     // Informations bancaires
     currentY += 20 // Espace avant les informations bancaires
-    // const bankInfo = [
-    //   'COORDONNEES BANCAIRES', 'SOCIETE GENERALE', "RELEVE D'IDENTITE BANCAIRE",
-    //   'Titulaire du compte: 01600 POMPIDOU', 'Domiciliation: XOF',
-    //   'Code agence: SN011 01016 004000 334878 23', 'Devise du compte: SN08 SN011 01016 004000 334878 23',
-    //   'RIB: SGSNSNDAXXX', 'IBAN: 0', 'BIC-SWIFT: 0'
-    // ]
-    // bankInfo.forEach((line, index) => {
-    //   if (currentY > 270) { // Vérification avant chaque ligne pour les informations bancaires
-    //     doc.addPage()
-    //     currentY = 20
-    //     addFooter()
-    //   }
-
-    //   // Réduire la longueur du rectangle et ajuster la taille de l'écriture
-    //   const rectLength = 70 // Nouvelle longueur du rectangle, ajustez selon les besoins
-    //   const fontSize = 8 // Nouvelle taille de l'écriture, ajustez selon les besoins
-
-    //   if (index === 0) {
-    //     doc.setFillColor(0, 100, 0)
-    //     doc.rect(20, currentY, rectLength, 5, 'F')
-    //     doc.setFontSize(fontSize)
-    //   } else {
-    //     doc.setFillColor(0, 128, 0)
-    //     doc.rect(20, currentY, rectLength, 5, 'F')
-    //     doc.setFontSize(fontSize)
-    //   }
-
-    //   doc.setTextColor(255, 255, 255)
-    //   // Assurez-vous que le texte est bien aligné à l'intérieur du rectangle plus petit
-    //   doc.text(line, 22, currentY + 3)
-    //   currentY += 5
-    // })
 
     //Dernière ligne verte
     if (currentY > 270) {
@@ -517,13 +319,6 @@ function GeneratePDFButton({ invoice, currency, file }) {
       addFooter()
     }
     currentY += 20 // Espace avant les informations bancaires
-    //doc.setFillColor(144, 238, 144)
-    //doc.rect(20, currentY, 170, 2, 'F')
-    // doc.setFontSize(10)
-    // doc.setTextColor(0, 0, 0)
-    // doc.text("Adresse : Sacré Cœur 3, Villa n° 8974 – Code Postal : 11000, Dakar,", 50, currentY + 6)
-    // doc.text("E-mail : kebsamadou@gmail.com / amadoukkebe@palabresak2.com", 50, currentY + 12)
-    // doc.text("Site Web : www.palabresak2.com, Tél : +221 77 871 25 11", 50, currentY + 18)
 
     // doc.save(`facture-${invoice._id}.pdf`)
     const blob = doc.output('blob')

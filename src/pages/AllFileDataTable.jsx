@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import NavigationBreadcrumb from '../components/NavigationBreadcrumb'
 import GeneratePDFButtonFile from '../components/GeneratePDFButtonFile'
+import CurrencySelector from '../components/CurrencySelector' // Importez le nouveau composant
 
 const AllFileDataTable = () => {
   const [fileData, setFileData] = useState([]) // Stockage des données de fichiers
   const [loading, setLoading] = useState(true) // Indicateur de chargement
+  const [currency, setCurrency] = useState('FCFA') // EUR comme valeur par défaut
   const [error, setError] = useState('') // Stockage des erreurs
 
   const apiUrl = import.meta.env.VITE_APP_API_BASE_URL // URL de l'API
@@ -61,6 +63,7 @@ const AllFileDataTable = () => {
       <NavigationBreadcrumb pageName="Facture" />
       <h3 className="text-lg font-bold mb-4">Liste </h3>
       <div className="divider"></div>
+      <CurrencySelector currency={currency} setCurrency={setCurrency} />
       <table className="table w-full">
         <thead>
           <tr>
@@ -88,10 +91,14 @@ const AllFileDataTable = () => {
               <td>{file.projectName || 'N/A'}</td>
               <td>{file.totalWordCount}</td>
               <td>{file.totalPageCount}</td>
-              <td>{file.totalPriceForPages}</td>
-              <td>{file.totalPriceForWords}</td>
               <td>
-                <GeneratePDFButtonFile file={file} />
+                {file.totalPriceForPages} {currency}
+              </td>
+              <td>
+                {file.totalPriceForWords} {currency}
+              </td>
+              <td>
+                <GeneratePDFButtonFile file={file} currency={currency} />
               </td>
             </tr>
           ))}

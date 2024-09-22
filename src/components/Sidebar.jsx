@@ -11,6 +11,8 @@ import {
   faBook, // Icone pour Instruction
   faCog,
   faTag, // Icone pour Paramètre
+  faCalculator, // Icone pour Calculatrice
+  faProjectDiagram, // Icone pour Projets
 } from '@fortawesome/free-solid-svg-icons'
 import logo from '../images/logo/logo.png'
 
@@ -34,9 +36,21 @@ function Sidebar() {
       route: '/dash/Formulaire',
       icon: faClipboardList,
     },
-    { id: 7, label: 'Instructions', route: '/dash/instruction', icon: faBook },
-    { id: 8, label: 'Message', route: '/dash/notification', icon: faEnvelope },
-    { id: 9, label: 'Paramètres', route: '/dash/parametre', icon: faCog },
+    {
+      id: 7,
+      label: 'Calculatrice',
+      route: '/dash/enum',
+      icon: faCalculator,
+    },
+    {
+      id: 8,
+      label: 'Projets',
+      route: '/dash/enumTab',
+      icon: faProjectDiagram,
+    },
+    { id: 9, label: 'Instructions', route: '/dash/instruction', icon: faBook },
+    { id: 10, label: 'Message', route: '/dash/notification', icon: faEnvelope },
+    { id: 11, label: 'Paramètres', route: '/dash/parametre', icon: faCog },
   ]
 
   const handleMenuItemClick = (id) => {
