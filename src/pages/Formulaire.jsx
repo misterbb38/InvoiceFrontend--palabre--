@@ -14,6 +14,7 @@ const Formulaire = () => {
   const [articles, setArticles] = useState([])
   const [type, setType] = useState('facture')
   const [status, setStatus] = useState('Attente')
+  const [currency, setCurrency] = useState('CFA') // État pour la devise
   const [showToast, setShowToast] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
   const [isSuccess, setIsSuccess] = useState(true)
@@ -214,6 +215,7 @@ const Formulaire = () => {
       ),
       type: type,
       status: status,
+      currency: currency,
     }
 
     try {
@@ -420,6 +422,23 @@ const Formulaire = () => {
                     >
                       <option value="facture">Facture</option>
                       <option value="devis">Devis</option>
+                    </select>
+                  </div>
+
+                  {/* Ajout du nouveau champ pour la devise */}
+                  <div className="mb-5.5">
+                    <label className="mb-3 block text-sm font-medium base-content">
+                      Devise
+                    </label>
+                    <select
+                      className="w-full rounded border border-stroke bg-gray py-3 px-4.5 base-content focus:border-primary focus-visible:outline-none dark:border-strokedark bg-base-300  dark:focus:border-primary"
+                      name="currency"
+                      value={currency}
+                      onChange={(e) => setCurrency(e.target.value)}
+                    >
+                      <option value="CFA">CFA</option>
+                      <option value="euro">Euro</option>
+                      <option value="dollar">Dollar</option>
                     </select>
                   </div>
 

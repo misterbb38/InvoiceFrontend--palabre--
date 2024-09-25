@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 import logoLeft from '../images/logo/logo.png'
 import logoRight from '../images/logo2.png'
 
-function GeneratePDFButton({ invoice, currency }) {
+function GeneratePDFButton({ invoice }) {
   const [user, setUser] = useState({
     nom: '',
     prenom: '',
@@ -246,33 +246,7 @@ function GeneratePDFButton({ invoice, currency }) {
 
     doc.setFontSize(8)
     doc.setTextColor(0, 0, 0)
-    // invoice.items.forEach((item, index) => {
-    //   const itemTextHeight =
-    //     doc.splitTextToSize(item.description, 60).length * 5
-    //   const itemHeight = itemTextHeight + 5 // Ajouter une marge
-    //   if (currentY + itemHeight > 280) {
-    //     doc.addPage()
-    //     currentY = 20 // Réinitialiser la position Y après l'ajout d'une page
-    //     addFooter()
-    //   }
-    //   const textY = currentY + itemHeight / 2 - itemTextHeight / 2
-    //   doc.text(item.ref, 22, textY)
-    //   doc.text(doc.splitTextToSize(item.description, 60), 42, textY)
-    //   doc.text(item.quantity.toString(), 112, textY)
-    //   const formattedPrice = formatNumber(item.price.toFixed(0))
-    //   const formattedTotal = formatNumber(item.total.toFixed(0))
 
-    //   // Ensuite, utilisez formattedPrice et formattedTotal avec jsPDF
-    //   doc.text(`${formattedPrice} ${currency}`,  132, textY)
-    //   doc.text(`${formattedTotal} ${currency}`, 162, textY)
-    //   // doc.text(`${formatNumberWithSpace(item.price.toFixed(2))} ${currency}`, 132, textY)
-    //   // doc.text(`${formatNumberWithSpace(item.total.toFixed(2))} ${currency}`, 162, textY)
-    //   if (index < invoice.items.length - 1) {
-    //     doc.setDrawColor(0)
-    //     doc.line(20, currentY + itemHeight + 2, 190, currentY + itemHeight + 2)
-    //   }
-    //   currentY += itemHeight + 5
-    // })
     sortedItems.forEach((item, index) => {
       // Si la catégorie change, ajouter un en-tête de catégorie avec un fond gris, texte centré et en gras
       if (item.category !== currentCategory) {
@@ -317,20 +291,38 @@ function GeneratePDFButton({ invoice, currency }) {
       // Ajouter les colonnes avec du texte
       doc.setTextColor(0, 0, 0) // Texte en noir pour bien contraster avec le fond
       doc.text(item.ref, 22, textY, { baseline: 'middle' }) // Centrer le texte verticalement
-      doc.text(doc.splitTextToSize(item.description, 60), 42, textY, {
+      doc.text(doc.splitTextToSize(item.description, 60), 42, textY - 2, {
         baseline: 'middle',
       })
       doc.text(item.quantity.toString(), 112, textY, { baseline: 'middle' })
 
-      const formattedPrice = formatNumber(item.price.toFixed(0))
-      const formattedTotal = formatNumber(item.total.toFixed(0))
+      const formattedPrice = formatNumber(item.price.toFixed(2))
+      const formattedTotal = formatNumber(item.total.toFixed(2))
 
-      doc.text(`${formattedPrice} ${currency}`, 132, textY, {
-        baseline: 'middle',
-      })
-      doc.text(`${formattedTotal} ${currency}`, 162, textY, {
-        baseline: 'middle',
-      })
+      // Définir un mappage entre les noms des devises et leurs symboles
+      const currencySymbols = {
+        euro: '€',
+        dollar: '$',
+        CFA: 'FCFA',
+      }
+
+      // Puis, lors de l'affichage, utiliser le symbole correspondant
+      doc.text(
+        `${formattedPrice} ${currencySymbols[invoice.currency] || invoice.currency}`,
+        132,
+        textY,
+        {
+          baseline: 'middle',
+        }
+      )
+      doc.text(
+        `${formattedTotal} ${currencySymbols[invoice.currency] || invoice.currency}`,
+        162,
+        textY,
+        {
+          baseline: 'middle',
+        }
+      )
 
       // Ajouter des colonnes avec des lignes verticales (pour les articles uniquement, pas pour les catégories)
       doc.setDrawColor(0, 0, 0)
@@ -466,17 +458,17 @@ function GeneratePDFButton({ invoice, currency }) {
     }
 
     // Function to convert the amount to FCFA
-    function convertToFCFA(amount, currency) {
-      if (currency in conversionRates) {
-        return amount * conversionRates[currency]
-      }
-      return amount // No conversion if currency is FCFA
-    }
+    // function convertToFCFA(amount, currency) {
+    //   if (currency in conversionRates) {
+    //     return amount * conversionRates[currency]
+    //   }
+    //   return amount // No conversion if currency is FCFA
+    // }
 
     // Determine the total amount in the original currency
     const totalAmount = invoice.total
-    const originalCurrency = currency // Assumed to be either 'EUR' or 'USD' or 'FCFA'
-    const totalAmountFCFA = convertToFCFA(totalAmount, originalCurrency)
+    const originalCurrency = invoice.currency // Assumed to be either 'EUR' or 'USD' or 'FCFA'
+    const totalAmountFCFA = invoice.conversion
 
     // Set font size and color
     doc.setFontSize(8)
@@ -513,7 +505,7 @@ function GeneratePDFButton({ invoice, currency }) {
 
     // Ajout du texte au PDF
     const montantEnDevise = invoice.total
-    const montantEnCFA = convertirEnCFA(montantEnDevise, currency) // Conversion en CFA
+    const montantEnCFA = invoice.conversion // Conversion en CFA
     const montantEnLettresCFA = convertirSommeEnLettres(montantEnCFA)
 
     // Couleur pour les montants en vert foncé
@@ -540,10 +532,19 @@ function GeneratePDFButton({ invoice, currency }) {
     currentY += explicationText.length * 4 // Espacement en fonction de la longueur du texte
 
     // Si la devise n'est pas en FCFA, ajouter les informations de conversion
-    if (currency !== 'FCFA') {
-      const conversionText = `À convertir en francs CFA (XOF) au taux de 1 ${currency} = 600 XOF.\nSoit Montant à payer : ${formatNumber(montantEnCFA.toFixed(0))} XOF (${convertirSommeEnLettres(montantEnCFA)}).`
+    if (invoice.currency !== 'CFA') {
+      let exchangeRate = 1
+      if (invoice.currency === 'euro') {
+        exchangeRate = 655
+      } else if (invoice.currency === 'dollar') {
+        exchangeRate = 600
+      }
 
-      // Utiliser splitTextToSize pour ajuster le texte entre 20 et 100 de largeur
+      const montantEnCFA = invoice.conversion
+
+      const conversionText = `À convertir en francs CFA (XOF) au taux de 1 ${invoice.currency} = ${exchangeRate} XOF.\nSoit Montant à payer : ${formatNumber(montantEnCFA.toFixed(0))} XOF (${convertirSommeEnLettres(montantEnCFA)}).`
+
+      // Utiliser splitTextToSize pour ajuster le texte entre 20 et 80 de largeur
       const conversionTextLines = doc.splitTextToSize(conversionText, 80)
       doc.text(conversionTextLines, 20, currentY)
       currentY += conversionTextLines.length * 4

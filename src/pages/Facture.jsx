@@ -24,6 +24,12 @@ function Facture() {
   const facturesPerPage = 10
 
   const apiUrl = import.meta.env.VITE_APP_API_BASE_URL
+  // **Création du mappage des devises aux symboles**
+  const currencySymbols = {
+    dollar: '$',
+    euro: '€',
+    CFA: 'FCFA',
+  }
 
   // Fonction pour rafraîchir les factures
   const refreshFactures = async () => {
@@ -177,7 +183,8 @@ function Facture() {
                     <td>{new Date(facture.date).toLocaleDateString()}</td>
                     <td>{facture.invoiceNumber}</td>
                     <td>
-                      {facture.total.toFixed(2)} {currency}
+                      {facture.total.toFixed(2)}{' '}
+                      {currencySymbols[facture.currency] || facture.currency}
                     </td>
                     {/* <td>{facture.status}</td> */}
 
