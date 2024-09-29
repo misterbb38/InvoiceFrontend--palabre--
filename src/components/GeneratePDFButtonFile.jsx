@@ -279,7 +279,7 @@ function GeneratePDFButton({ invoice, currency, file }) {
     doc.text(`${file.totalPriceForPages.toFixed(0)} ${currency}`, 170, currentY)
 
     // Vérification pour l'ajout d'une page avant le total et les informations bancaires
-    if (currentY > 280) {
+    if (currentY > 250) {
       doc.addPage()
       currentY = 20 // Réinitialiser la position Y pour le contenu de la nouvelle page
       addFooter()

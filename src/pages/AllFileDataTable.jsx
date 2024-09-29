@@ -91,11 +91,12 @@ const AllFileDataTable = () => {
               <td>{file.projectName || 'N/A'}</td>
               <td>{file.totalWordCount}</td>
               <td>{file.totalPageCount}</td>
-              <td>
-                {file.totalPriceForPages} {currency}
-              </td>
+
               <td>
                 {file.totalPriceForWords} {currency}
+              </td>
+              <td>
+                {file.totalPriceForPages} {currency}
               </td>
               <td>
                 <GeneratePDFButtonFile file={file} currency={currency} />

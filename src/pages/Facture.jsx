@@ -155,7 +155,8 @@ function Facture() {
         </div>
       ) : (
         <>
-          <div className="overflow-x-auto">
+          {/* Affichage en tableau pour les écrans moyens et grands */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="table w-full">
               <thead>
                 <tr>
@@ -164,7 +165,6 @@ function Facture() {
                   </th>
                   <th className="font-bold text-lg text-base-content">Date</th>
                   <th className="font-bold text-lg text-base-content">
-                    {' '}
                     Nº facture
                   </th>
                   <th className="font-bold text-lg text-base-content">Total</th>
@@ -179,18 +179,16 @@ function Facture() {
               <tbody>
                 {currentFactures.map((facture) => (
                   <tr key={facture._id}>
-                    <td>{facture.client.name} </td>
+                    <td>{facture.client.name}</td>
                     <td>{new Date(facture.date).toLocaleDateString()}</td>
                     <td>{facture.invoiceNumber}</td>
                     <td>
                       {facture.total.toFixed(2)}{' '}
                       {currencySymbols[facture.currency] || facture.currency}
                     </td>
-                    {/* <td>{facture.status}</td> */}
-
-                    <td className="text-center ">
+                    <td className="text-center">
                       <span
-                        className={`${statusBadgeClasses[facture.status]} text-white  `}
+                        className={`${statusBadgeClasses[facture.status]} text-white`}
                       >
                         {facture.status.charAt(0).toUpperCase() +
                           facture.status.slice(1)}
@@ -217,6 +215,51 @@ function Facture() {
               </tbody>
             </table>
           </div>
+
+          {/* Affichage en cartes pour les petits écrans */}
+          <div className="sm:hidden grid grid-cols-1 gap-4">
+            {currentFactures.map((facture) => (
+              <div key={facture._id} className="card bg-base-100 shadow-md p-4">
+                <h3 className="font-bold text-lg mb-2">
+                  Facture Nº {facture.invoiceNumber}
+                </h3>
+                <p>
+                  <span className="font-semibold">Client:</span>{' '}
+                  {facture.client.name}
+                </p>
+                <p>
+                  <span className="font-semibold">Date:</span>{' '}
+                  {new Date(facture.date).toLocaleDateString()}
+                </p>
+                <p>
+                  <span className="font-semibold">Total:</span>{' '}
+                  {facture.total.toFixed(2)}{' '}
+                  {currencySymbols[facture.currency] || facture.currency}
+                </p>
+                <p className="mt-2">
+                  <span
+                    className={`${statusBadgeClasses[facture.status]} text-white`}
+                  >
+                    {facture.status.charAt(0).toUpperCase() +
+                      facture.status.slice(1)}
+                  </span>
+                </p>
+                <div className="flex justify-between mt-4">
+                  <GeneratePDFButton invoice={facture} currency={currency} />
+                  <EditFactureButton
+                    factureId={facture._id}
+                    onFactureUpdated={refreshFactures}
+                  />
+                  <DeleteFactureButton
+                    factureId={facture._id}
+                    onFactureDeleted={refreshFactures}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Pagination */}
           {totalPageCount > 1 && (
             <nav className="flex justify-center mt-4">
               <ul className="flex list-none">
